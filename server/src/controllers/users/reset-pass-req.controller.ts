@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
-import { UserModel } from "../../models/user.model";
+import { UserModel } from "../../models";
 import { hashPassword } from "../../utils/bcrypt";
 import { sendMail } from "../../utils/mail";
 

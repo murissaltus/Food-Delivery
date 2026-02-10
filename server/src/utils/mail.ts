@@ -33,21 +33,55 @@
 //   });
 // };
 
+import "dotenv/config";
+import express from "express";
 import nodemailer from "nodemailer";
 
-export const sendMail = async (to: string, subject: string, html: string) => {
+const app = express();
+app.use(express.json());
+const PORT = 8000;
+
+const sendMail = async (to: string, subject: string, html: string) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.AUTH_PASS,
     },
   });
-
   await transporter.sendMail({
-    from: `"Food App" <${process.env.MAIL_USER}>`,
+    from: process.env.AUTH_EMAIL,
     to,
     subject,
     html,
   });
 };
+
+app.get("/send-mail", async (_req, res) => {
+  const recipient = process.env.AUTH_EMAIL;
+  console.log("Sending mail to:", recipient);
+  const html = `
+<div
+  style="
+    width: 400px;
+    height: 300px;
+    background-color: aqua;
+    border-radius: 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  "
+>
+  Food delivery
+</div>
+ `;
+  await sendMail(recipient as string, "Food Delivery Test", html);
+  res.send({ message: "Mail sent" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server ${PORT}`);
+});
+
+export { sendMail };
